@@ -28,6 +28,19 @@ public class TodoController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("{id}")]
+    public IActionResult UpdateTodo(int id, [FromBody] Todo todo)
+    {
+        var updated = _service.Update(id, todo);
+
+        if (updated == null)
+        {
+            return NotFound(new { message = "Todo not found" });
+        }
+
+        return Ok(updated);
+    }
+
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
