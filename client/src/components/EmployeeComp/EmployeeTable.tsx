@@ -197,10 +197,10 @@ const EmployeeTable = () => {
                 const dept = departmentStyles[emp.department]
 
                 return (
-                <tr key={emp.id} onClick={()=>navigate(`/employee/${emp.id}`)} className=" hover:bg-gray-50 cursor-pointer">
+                <tr key={emp.id} className=" hover:bg-gray-50">
 
                     {/* Name */}
-                    <td className="px-6 py-4 flex items-center gap-3">
+                    <td className="px-6 py-4 flex items-center gap-3 cursor-pointer" onClick={()=>navigate(`/employee/${emp.id}`)}>
 
                     <img
                         src={emp.image}
@@ -285,7 +285,7 @@ const EmployeeTable = () => {
 
                         <td className="flex gap-3 items-center justify-center ">
 
-                            <Pencil className="w-5 h-5 cursor-pointer text-black  hover:text-blue-400"/>
+                            <Pencil onClick={()=>navigate("/form")} className="w-5 h-5 cursor-pointer text-black  hover:text-blue-400"/>
 
                             <Trash2 className="w-5 h-5 cursor-pointer text-black hover:text-red-400"/>
 
