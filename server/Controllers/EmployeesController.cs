@@ -23,4 +23,15 @@ public class EmployeesController : ControllerBase
         var result = await _employeeService.GetEmployeesAsync(page, pageSize);
         return Ok(result);
     }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchEmployees(
+        [FromQuery] string query = "",
+        [FromQuery] int offset = 0,
+        [FromQuery] int limit = 50
+    )
+    {
+        var result = await _employeeService.SearchEmployeesAsync(query, offset, limit);
+        return Ok(result);
+    }
 }

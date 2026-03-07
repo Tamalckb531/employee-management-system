@@ -19,7 +19,34 @@ Tests for `GET /api/employees` endpoint logic. Validates pagination behavior, in
 | 11 | Employee without spouse returns `null` | Passed |
 | 12 | Employee with children returns populated ChildDto array | Passed |
 | 13 | Employee without children returns empty array | Passed |
-| 14 | DTO maps correct fields (name, image, department) | Passed |
+| 14 | DTO maps correct fields (name, image, gender, NID, phone, department, basicSalary) | Passed |
 | 15 | Results are ordered by ID ascending | Passed |
 
 **Total: 15 passed, 0 failed**
+
+## 2. Employee Service — Search Employees
+
+Tests for `GET /api/employees/search` endpoint logic. Validates case-insensitive search by name, NID, and department, infinite scroll with offset/limit, edge cases for empty queries, missing relations, and invalid parameters.
+
+| # | Test | Status |
+|---|------|--------|
+| 1 | Search by name returns matching employees | Passed |
+| 2 | Search by NID returns matching employees | Passed |
+| 3 | Search by department returns matching employees | Passed |
+| 4 | Search is case-insensitive (lower, upper, mixed) | Passed |
+| 5 | Infinite scroll — first batch (offset=0, limit=50) | Passed |
+| 6 | Infinite scroll — second batch (offset=50, limit=50) | Passed |
+| 7 | Infinite scroll — final batch (offset=100, limit=50) | Passed |
+| 8 | Infinite scroll — results ordered by ID ascending | Passed |
+| 9 | Empty query returns empty array | Passed |
+| 10 | Whitespace-only query returns empty array | Passed |
+| 11 | No matching results returns empty array | Passed |
+| 12 | Employee without spouse returns `null` spouse | Passed |
+| 13 | Employee without children returns empty children array | Passed |
+| 14 | Employee with children returns populated children | Passed |
+| 15 | Negative offset clamped to 0 | Passed |
+| 16 | Negative limit clamped to default (50) | Passed |
+| 17 | Offset beyond available results returns empty array | Passed |
+| 18 | Returns correct DTO fields (name, image, gender, NID, phone, department, basicSalary, spouse, children) | Passed |
+
+**Total: 18 passed, 0 failed**

@@ -13,7 +13,7 @@ The Employee Registry System is a full-stack web application for managing employ
 - **Employee CRUD** — Create, read, update, and delete employee profiles including personal details, department, and salary.
 - **Family Records** — Track spouse and children information linked to each employee.
 - **Admin Authentication** — Role-based access via a hardcoded admin account.
-- **Search & Filtering** — Search employees by name, NID, department, or phone (planned).
+- **Search & Filtering** — Search employees by name, NID, or department with case-insensitive matching.
 - **PDF Export** — Generate PDF reports for employee data (planned).
 
 ### Tech Stack
@@ -174,7 +174,11 @@ The Employee Registry System is a full-stack web application for managing employ
       "id": 1,
       "name": "Hasan Mahmud",
       "image": "https://randomuser.me/api/portraits/men/1.jpg",
+      "gender": "Male",
+      "nid": "1234567890",
+      "phone": "+8801712345678",
       "department": "Engineering",
+      "basicSalary": 45000.00,
       "spouse": {
         "name": "Moushumi Akter",
         "image": "https://randomuser.me/api/portraits/women/1.jpg"
@@ -206,14 +210,18 @@ The Employee Registry System is a full-stack web application for managing employ
 
 **Employee DTO Fields**
 
-| Field       | Type        | Description                                |
-|-------------|-------------|--------------------------------------------|
-| `id`        | int         | Employee ID                                |
-| `name`      | string      | Employee full name                         |
-| `image`     | string      | Employee image URL                         |
-| `department`| string      | Department name                            |
-| `spouse`    | SpouseDto?  | Spouse info, or `null` if no spouse        |
-| `children`  | ChildDto[]  | Array of children, empty if none           |
+| Field         | Type          | Description                                |
+|---------------|---------------|--------------------------------------------|
+| `id`          | int           | Employee ID                                |
+| `name`        | string        | Employee full name                         |
+| `image`       | string        | Employee image URL                         |
+| `gender`      | string        | Employee gender                            |
+| `nid`         | string        | National ID (10 or 17 digits)              |
+| `phone`       | string        | Phone number (BD format)                   |
+| `department`  | string        | Department name                            |
+| `basicSalary` | decimal       | Basic salary in BDT                        |
+| `spouse`      | SpouseDto?    | Spouse info, or `null` if no spouse        |
+| `children`    | ChildDto[]    | Array of children, empty if none           |
 
 **Error Handling**
 
@@ -226,11 +234,102 @@ The Employee Registry System is a full-stack web application for managing employ
 | Empty database               | Returns empty `data` array, `totalCount: 0`       |
 | Database error               | Returns 500 Internal Server Error                 |
 
+### 5.2 Search Employees
+
+| Field             | Detail                                              |
+|-------------------|-----------------------------------------------------|
+| **API Name**      | Search Employees                                    |
+| **Endpoint**      | `GET /api/employees/search`                         |
+| **Method**        | GET                                                 |
+| **Description**   | Searches employees by name, NID, or department with case-insensitive matching. Supports infinite scroll via offset/limit pagination. Returns the same DTO structure as the GetAll endpoint. |
+
+**Request Parameters (Query String)**
+
+| Parameter | Type   | Default | Description                                              |
+|-----------|--------|---------|----------------------------------------------------------|
+| `query`   | string | `""`    | Search keyword. Matches against Name, NID, and Department. Empty/whitespace returns empty array. |
+| `offset`  | int    | 0       | Number of results to skip. Clamped to 0 if negative.     |
+| `limit`   | int    | 50      | Maximum number of results to return. Clamped to 50 if < 1. |
+
+**Example Request**
+
+```
+GET /api/employees/search?query=engineering&offset=0&limit=50
+GET /api/employees/search?query=hasan&offset=0&limit=50
+GET /api/employees/search?query=123&offset=50&limit=50
+```
+
+**Response Format (200 OK)**
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Hasan Mahmud",
+    "image": "https://randomuser.me/api/portraits/men/1.jpg",
+    "gender": "Male",
+    "nid": "1234567890",
+    "phone": "+8801712345678",
+    "department": "Engineering",
+    "basicSalary": 45000.00,
+    "spouse": {
+      "name": "Moushumi Akter",
+      "image": "https://randomuser.me/api/portraits/women/1.jpg"
+    },
+    "children": [
+      {
+        "name": "Rafiq Hasan",
+        "image": "https://api.dicebear.com/7.x/adventurer/svg?seed=Rafiq"
+      }
+    ]
+  }
+]
+```
+
+**Response Fields**
+
+Returns an array of `EmployeeListDto` objects (same structure as the GetAll endpoint).
+
+| Field         | Type          | Description                                |
+|---------------|---------------|--------------------------------------------|
+| `id`          | int           | Employee ID                                |
+| `name`        | string        | Employee full name                         |
+| `image`       | string        | Employee image URL                         |
+| `gender`      | string        | Employee gender                            |
+| `nid`         | string        | National ID (10 or 17 digits)              |
+| `phone`       | string        | Phone number (BD format)                   |
+| `department`  | string        | Department name                            |
+| `basicSalary` | decimal       | Basic salary in BDT                        |
+| `spouse`      | SpouseDto?    | Spouse info, or `null` if no spouse        |
+| `children`    | ChildDto[]    | Array of children, empty if none           |
+
+**Error Handling**
+
+| Scenario                        | Behavior                                      |
+|---------------------------------|-----------------------------------------------|
+| Empty or whitespace query       | Returns empty array `[]`                      |
+| No matching employees           | Returns empty array `[]`                      |
+| `offset < 0`                   | Clamped to 0                                  |
+| `limit < 1`                    | Clamped to default (50)                       |
+| Offset beyond available results | Returns empty array `[]`                      |
+| Employee without spouse         | `spouse` field is `null`                      |
+| Employee without children       | `children` field is empty array `[]`          |
+| Database error                  | Returns 500 Internal Server Error             |
+
+**Infinite Scroll Behavior**
+
+The API is designed for infinite scrolling. The frontend increases `offset` to fetch the next batch:
+
+| Scenario: "Engineering" matches 120 employees | Result          |
+|-----------------------------------------------|-----------------|
+| `offset=0, limit=50`                          | First 50 results  |
+| `offset=50, limit=50`                         | Next 50 results   |
+| `offset=100, limit=50`                        | Final 20 results  |
+
 ---
 
 ## 6. Future Scope (Planned)
 
-- Employee search by name, NID, department, phone
 - PDF report generation for individual/all employees
 - Docker Compose for full-stack local development
 - Image upload to cloud storage (replacing URL-based images)

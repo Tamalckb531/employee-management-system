@@ -232,7 +232,11 @@ public class EmployeeServiceTests : IDisposable
 
         Assert.Equal("Employee 1", dto.Name);
         Assert.Contains("portraits/men/1", dto.Image);
+        Assert.Equal("Male", dto.Gender);
+        Assert.Equal("0000000001", dto.NID);
+        Assert.Equal("+8801700000001", dto.Phone);
         Assert.Equal("Engineering", dto.Department);
+        Assert.Equal(41000m, dto.BasicSalary);
     }
 
     [Fact]

@@ -1,69 +1,170 @@
 ` 
-You have the context of the EmployeeManagement project and the SeedData.cs file.
+Implement a Global Search API for the EmployeeManagement backend.
+The frontend already has debouncing, so do not implement debouncing on the backend.
 
-Task: Create a new API to fetch employee data for a frontend data table with infinite scroll.
+Requirements
 
-Requirements:
+Endpoint
 
-API endpoint: GET /api/employees.
+GET /api/employees/search
 
-Returns first 50 employees by default. Should support pagination or throttling for infinite scroll (frontend will pass page or offset).
+Query parameters
 
-Response: An array of employee objects containing:
+query (string) → search keyword
 
-Employee Name, Image
+offset (int, default = 0)
 
-Spouse Name, Image (if exists)
+limit (int, default = 50)
 
-Children array with each child's Name and Image (if exists)
+Search behavior
 
-Implement a service layer for business logic.
+The search must be case-insensitive and match employees by:
 
-Include controller, service, and DTOs as needed.
+Name
 
-Include unit tests covering:
+NID
 
-Default 50 results
+Department
 
-Pagination/offset
+Example:
 
-Employees with no spouse
+searching "engineering" should return employees in the Engineering department
 
-Employees with no children
+searching "hasan" should return employees whose name contains Hasan
 
-Empty database scenario
+searching "123" should match NID containing 123
 
-Invalid page or offset values
+Use EF Core LINQ with proper indexing-friendly queries.
 
-Generate an SRS.md file entry for this API in the assessment format, including:
+Infinite Scroll Compatibility
+
+This API must support infinite scrolling, same as the existing GetAll endpoint.
+
+Rules:
+
+default limit = 50
+
+frontend will increase offset to fetch next results
+
+results must be ordered consistently (e.g. by Name or Id)
+
+Skip(offset).Take(limit) must be used
+
+Example:
+
+Search "Engineering" returns 120 employees
+
+offset=0 → first 50
+
+offset=50 → next 50
+
+offset=100 → final 20
+
+The API must behave correctly for this scenario.
+
+Response Format
+
+Return an array of employees containing:
+
+Name
+
+Image
+
+Spouse
+
+Name
+
+Image
+
+Children[]
+
+Name
+
+Image
+
+Same DTO structure as the GetAll endpoint so the frontend can reuse the same table component.
+
+Architecture
+
+Follow the existing architecture:
+
+Controller
+
+Service layer
+
+DTOs (reuse if possible)
+
+Files to implement:
+
+EmployeesController.cs (search endpoint)
+
+EmployeeService.cs (search logic)
+
+Edge Cases to Handle
+
+empty search query → return empty array
+
+no matching employees → return empty array
+
+employees without spouse
+
+employees without children
+
+offset larger than available results
+
+negative offset or limit
+
+Unit Tests
+
+Create test cases covering:
+
+Search by Name
+
+Search by NID
+
+Search by Department
+
+Case-insensitive search
+
+Infinite scroll behavior (offset + limit)
+
+Empty search query
+
+No matching results
+
+Employee with no spouse
+
+Employee with no children
+
+Invalid offset/limit values
+
+Documentation
+
+Update the SRS.md file with this API using the same format already used for the GetAll endpoint.
+
+Include:
 
 API Name
 
 Endpoint
 
-Request parameters
-
-Response format
-
 Description
 
-Error handling
+Query Parameters
 
-Do not implement global search or filters yet.
+Example Request
 
-Make sure the code is correct, clean, and follows EF Core best practices.
+Example Response
 
-Output:
+Error Handling
 
-EmployeesController.cs
+Important
 
-EmployeeService.cs
+Do not modify existing models or SeedData
 
-DTOs (if needed)
+Reuse existing DTOs if possible
 
-Unit test file with all edge cases
+Ensure performance is good for large datasets
 
-SRS.md entry
-
-Keep all other project structure and data intact. Do not modify existing models or seed data.
+Ensure infinite scroll works exactly like the GetAll API
 `
