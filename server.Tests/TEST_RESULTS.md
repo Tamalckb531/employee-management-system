@@ -68,3 +68,19 @@ Tests for `GET /api/employees/{id}` endpoint logic. Validates fetching a single 
 | 9 | Returns correct DTO fields (id, name, image, gender, NID, phone, department, basicSalary, spouse with gender/NID, children with gender/dateOfBirth) | Passed |
 
 **Total: 9 passed, 0 failed**
+
+## 4. Admin Authentication — Login
+
+Tests for `POST /api/admin/login` endpoint logic. Validates admin credential verification using SHA256 hashing, JWT token generation with correct claims, and rejection of invalid/empty credentials.
+
+| # | Test | Status |
+|---|------|--------|
+| 1 | Valid admin credentials return JWT token with `expiresIn: 3600` | Passed |
+| 2 | Invalid username returns `null` (401 Unauthorized) | Passed |
+| 3 | Invalid passkey returns `null` (401 Unauthorized) | Passed |
+| 4 | Empty username returns `null` (401 Unauthorized) | Passed |
+| 5 | Empty passkey returns `null` (401 Unauthorized) | Passed |
+| 6 | Returned token contains expected claims (AdminId, Username, Role) with correct issuer/audience | Passed |
+| 7 | Password hashing matches the SeedData SHA256 hashing logic | Passed |
+
+**Total: 7 passed, 0 failed**

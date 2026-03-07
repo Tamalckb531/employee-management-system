@@ -423,6 +423,81 @@ Returns a single `EmployeeListFullDto` object with extended spouse and children 
 | Employee without children       | `children` field is empty array `[]`          |
 | Database error                  | Returns 500 Internal Server Error             |
 
+### 5.4 Admin Login
+
+| Field             | Detail                                              |
+|-------------------|-----------------------------------------------------|
+| **API Name**      | Admin Login                                         |
+| **Endpoint**      | `POST /api/admin/login`                             |
+| **Method**        | POST                                                |
+| **Description**   | Authenticates an admin user using username and passkey. The passkey is hashed using SHA256 and compared against the stored hash. On success, returns a JWT token containing AdminId, Username, and Role claims. The token can be used for future admin-protected operations (create, update, delete employees). |
+
+**Request Body (JSON)**
+
+| Field      | Type   | Required | Description                    |
+|------------|--------|----------|--------------------------------|
+| `username` | string | Yes      | Admin username                 |
+| `passkey`  | string | Yes      | Admin password (plain text)    |
+
+**Example Request**
+
+```
+POST /api/admin/login
+Content-Type: application/json
+
+{
+  "username": "Admin",
+  "passkey": "123456"
+}
+```
+
+**Response Format (200 OK)**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiresIn": 3600
+}
+```
+
+**Response Fields**
+
+| Field       | Type   | Description                                    |
+|-------------|--------|------------------------------------------------|
+| `token`     | string | JWT token for authenticating future requests   |
+| `expiresIn` | int    | Token validity duration in seconds (3600 = 1 hour) |
+
+**JWT Token Claims**
+
+| Claim      | Description                          |
+|------------|--------------------------------------|
+| `AdminId`  | The admin's database ID              |
+| `Name`     | The admin's username                 |
+| `Role`     | The admin's role (e.g., "Admin")     |
+
+**Error Handling**
+
+| Scenario                        | Behavior                                      |
+|---------------------------------|-----------------------------------------------|
+| Valid credentials               | Returns `200 OK` with JWT token               |
+| Invalid username                | Returns `401 Unauthorized`                    |
+| Invalid passkey                 | Returns `401 Unauthorized`                    |
+| Empty username                  | Returns `401 Unauthorized`                    |
+| Empty passkey                   | Returns `401 Unauthorized`                    |
+| Database error                  | Returns 500 Internal Server Error             |
+
+**JWT Configuration**
+
+JWT settings are stored in `appsettings.json`:
+
+| Setting    | Description                              |
+|------------|------------------------------------------|
+| `Key`      | Secret key for signing tokens (min 32 chars) |
+| `Issuer`   | Token issuer identifier                  |
+| `Audience` | Token audience identifier                |
+
+The JWT middleware is configured to validate issuer, audience, lifetime, and signing key. Future admin-only endpoints can be protected using `[Authorize(Roles = "Admin")]`.
+
 ---
 
 ## 6. Future Scope (Planned)
