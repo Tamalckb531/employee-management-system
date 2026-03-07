@@ -29,3 +29,26 @@ export interface EmployeeSearchResponse {
   data: Employee[];
   hasMore: boolean;
 }
+
+export interface EmployeeDetail {
+  id: number;
+  name: string;
+  image: string;
+  gender: string;
+  nid: string;
+  phone: string;
+  department: string;
+  basicSalary: number;
+  spouse?: {
+    name: string;
+    image: string;
+    gender: string;
+    nid: string;
+  };
+  children: {
+    name: string;
+    image: string;
+    gender: string;
+    dateOfBirth: string;
+  }[];
+}

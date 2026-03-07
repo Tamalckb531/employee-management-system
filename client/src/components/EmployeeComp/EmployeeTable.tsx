@@ -1,7 +1,9 @@
+import { useRef } from "react";
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEmployees } from "../../hooks/useEmployees";
 import { useAdminStore } from "../../store/adminStore";
+import { exportPdf } from "../../lib/exportPdf";
 
 const departmentStyles: Record<string, { color: string; bg: string }> = {
   Engineering: { color: "#6843E9", bg: "#F4F3FF" },
@@ -17,13 +19,17 @@ const EmployeeTable = () => {
   const navigate = useNavigate();
   const { employees, loading, handleSearch, tableRef, query } = useEmployees();
   const isAdmin = useAdminStore((s) => s.isAdmin);
+  const printRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="w-full h-full p-5 flex items-center justify-center">
-      <div className="overflow-x-auto max-w-350 rounded-lg border shadow-xl border-gray-200 bg-[#FFFFFC]">
+      <div ref={printRef} className="overflow-x-auto max-w-350 rounded-lg border shadow-xl border-gray-200 bg-[#FFFFFC]">
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4 p-4">
-          <button className="border border-slate-400 text-slate-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-100 hover:text-black">
+          <button
+            onClick={() => exportPdf(printRef.current, "employee-table")}
+            className="border border-slate-400 text-slate-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-100 hover:text-black"
+          >
             Export table as pdf
           </button>
 

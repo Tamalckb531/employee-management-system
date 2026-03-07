@@ -1,4 +1,4 @@
-import type { Employee, EmployeeListResponse, EmployeeSearchResponse } from "../types/employee";
+import type { Employee, EmployeeDetail, EmployeeListResponse, EmployeeSearchResponse } from "../types/employee";
 
 export async function fetchEmployees(
   page: number,
@@ -22,4 +22,12 @@ export async function searchEmployees(
   if (!res.ok) throw new Error("Failed to search employees");
   const data: Employee[] = await res.json();
   return { data, hasMore: data.length >= limit };
+}
+
+export async function fetchEmployeeById(
+  id: number
+): Promise<EmployeeDetail> {
+  const res = await fetch(`/api/employees/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch employee");
+  return res.json();
 }
