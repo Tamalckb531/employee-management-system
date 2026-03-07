@@ -1,4 +1,4 @@
-` 
+const backend = ` 
 Implement an API endpoint to fetch full details of a single employee for the employee details page.
 
 Endpoint
@@ -152,3 +152,9 @@ Follow existing coding style
 
 Ensure the API returns a single EmployeeDto object
 `
+
+const frontend = `
+
+
+`
+
