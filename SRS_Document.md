@@ -498,6 +498,202 @@ JWT settings are stored in `appsettings.json`:
 
 The JWT middleware is configured to validate issuer, audience, lifetime, and signing key. Future admin-only endpoints can be protected using `[Authorize(Roles = "Admin")]`.
 
+### 5.5 Create Employee
+
+| Field             | Detail                                              |
+|-------------------|-----------------------------------------------------|
+| **API Name**      | Create Employee                                     |
+| **Endpoint**      | `POST /api/employees`                               |
+| **Method**        | POST                                                |
+| **Auth**          | `Authorization: Bearer <jwt_token>` (Role: Admin)   |
+| **Description**   | Creates a new employee with optional spouse and children. Requires a valid admin JWT token. Returns the full created employee DTO. |
+
+**Request Body (JSON)**
+
+| Field         | Type              | Required | Description                        |
+|---------------|-------------------|----------|------------------------------------|
+| `name`        | string            | Yes      | Employee full name                 |
+| `image`       | string            | Yes      | Employee image URL                 |
+| `gender`      | string            | Yes      | Employee gender                    |
+| `phone`       | string            | Yes      | Phone number (BD format)           |
+| `nid`         | string            | Yes      | National ID (10 or 17 digits)      |
+| `department`  | string            | Yes      | Department name                    |
+| `basicSalary` | decimal           | Yes      | Basic salary in BDT                |
+| `spouse`      | CreateSpouseDto?  | No       | Spouse data, or `null`             |
+| `children`    | CreateChildDto[]? | No       | Array of children, or `null`       |
+
+**CreateSpouseDto Fields**
+
+| Field    | Type   | Required | Description        |
+|----------|--------|----------|--------------------|
+| `name`   | string | Yes      | Spouse full name   |
+| `image`  | string | Yes      | Spouse image URL   |
+| `gender` | string | Yes      | Spouse gender      |
+| `nid`    | string | Yes      | Spouse National ID |
+
+**CreateChildDto Fields**
+
+| Field         | Type     | Required | Description           |
+|---------------|----------|----------|-----------------------|
+| `name`        | string   | Yes      | Child full name       |
+| `image`       | string   | Yes      | Child image URL       |
+| `gender`      | string   | Yes      | Child gender          |
+| `dateOfBirth` | DateTime | Yes      | Child date of birth   |
+
+**Example Request**
+
+```
+POST /api/employees
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "name": "Kamal Ahmed",
+  "image": "https://example.com/kamal.jpg",
+  "gender": "Male",
+  "phone": "+8801712345000",
+  "nid": "1111111111",
+  "department": "Engineering",
+  "basicSalary": 55000.00,
+  "spouse": {
+    "name": "Fatema Ahmed",
+    "image": "https://example.com/fatema.jpg",
+    "gender": "Female",
+    "nid": "2222222222"
+  },
+  "children": [
+    {
+      "name": "Rahim Ahmed",
+      "image": "https://example.com/rahim.jpg",
+      "gender": "Male",
+      "dateOfBirth": "2018-05-10T00:00:00Z"
+    }
+  ]
+}
+```
+
+**Response Format (201 Created)**
+
+Returns the created `EmployeeListFullDto` object (same structure as Get Employee By Id).
+
+**Error Handling**
+
+| Scenario                        | Behavior                                      |
+|---------------------------------|-----------------------------------------------|
+| Valid admin token                | Returns `201 Created` with employee object    |
+| Missing JWT token               | Returns `401 Unauthorized`                    |
+| Invalid JWT token               | Returns `401 Unauthorized`                    |
+| Non-admin role                  | Returns `403 Forbidden`                       |
+| Duplicate NID                   | Returns `500` (unique constraint violation)   |
+| Duplicate phone                 | Returns `500` (unique constraint violation)   |
+| Database error                  | Returns `500 Internal Server Error`           |
+
+### 5.6 Update Employee
+
+| Field             | Detail                                              |
+|-------------------|-----------------------------------------------------|
+| **API Name**      | Update Employee                                     |
+| **Endpoint**      | `PUT /api/employees/{id}`                           |
+| **Method**        | PUT                                                 |
+| **Auth**          | `Authorization: Bearer <jwt_token>` (Role: Admin)   |
+| **Description**   | Updates an existing employee's fields, spouse, and children. If spouse is provided, it is created or updated. If spouse is `null`, the existing spouse is removed. Children are replaced entirely with the provided list. Requires a valid admin JWT token. |
+
+**Path Parameter**
+
+| Parameter | Type | Description                        |
+|-----------|------|------------------------------------|
+| `id`      | int  | The employee ID to update.         |
+
+**Request Body (JSON)**
+
+Same structure as Create Employee request body (`UpdateEmployeeDto`).
+
+**Example Request**
+
+```
+PUT /api/employees/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "name": "Kamal Ahmed (Updated)",
+  "image": "https://example.com/kamal-new.jpg",
+  "gender": "Male",
+  "phone": "+8801712345000",
+  "nid": "1111111111",
+  "department": "Finance",
+  "basicSalary": 60000.00,
+  "spouse": null,
+  "children": []
+}
+```
+
+**Response Format (200 OK)**
+
+Returns the updated `EmployeeListFullDto` object.
+
+**Error Handling**
+
+| Scenario                        | Behavior                                      |
+|---------------------------------|-----------------------------------------------|
+| Employee found and updated      | Returns `200 OK` with updated employee object |
+| Employee ID does not exist      | Returns `404 Not Found`                       |
+| Missing JWT token               | Returns `401 Unauthorized`                    |
+| Invalid JWT token               | Returns `401 Unauthorized`                    |
+| Non-admin role                  | Returns `403 Forbidden`                       |
+| Database error                  | Returns `500 Internal Server Error`           |
+
+**Spouse Update Behavior**
+
+| Scenario                             | Action                          |
+|--------------------------------------|---------------------------------|
+| `spouse` provided, employee has none | New spouse created              |
+| `spouse` provided, employee has one  | Existing spouse updated         |
+| `spouse` is `null`, employee has one | Existing spouse deleted          |
+| `spouse` is `null`, employee has none| No action                       |
+
+**Children Update Behavior**
+
+All existing children are removed and replaced with the provided list. If `children` is `null` or empty, all children are removed.
+
+### 5.7 Delete Employee
+
+| Field             | Detail                                              |
+|-------------------|-----------------------------------------------------|
+| **API Name**      | Delete Employee                                     |
+| **Endpoint**      | `DELETE /api/employees/{id}`                        |
+| **Method**        | DELETE                                              |
+| **Auth**          | `Authorization: Bearer <jwt_token>` (Role: Admin)   |
+| **Description**   | Deletes an employee by ID. Cascade deletes the associated spouse and all children. Requires a valid admin JWT token. |
+
+**Path Parameter**
+
+| Parameter | Type | Description                        |
+|-----------|------|------------------------------------|
+| `id`      | int  | The employee ID to delete.         |
+
+**Example Request**
+
+```
+DELETE /api/employees/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response Format (204 No Content)**
+
+Returns no body on successful deletion.
+
+**Error Handling**
+
+| Scenario                        | Behavior                                      |
+|---------------------------------|-----------------------------------------------|
+| Employee found and deleted      | Returns `204 No Content`                      |
+| Employee ID does not exist      | Returns `404 Not Found`                       |
+| Missing JWT token               | Returns `401 Unauthorized`                    |
+| Invalid JWT token               | Returns `401 Unauthorized`                    |
+| Non-admin role                  | Returns `403 Forbidden`                       |
+| Database error                  | Returns `500 Internal Server Error`           |
+
 ---
 
 ## 6. Future Scope (Planned)

@@ -84,3 +84,25 @@ Tests for `POST /api/admin/login` endpoint logic. Validates admin credential ver
 | 7 | Password hashing matches the SeedData SHA256 hashing logic | Passed |
 
 **Total: 7 passed, 0 failed**
+
+## 5. Employee Service — Admin CRUD Operations
+
+Tests for admin-only `POST /api/employees`, `PUT /api/employees/{id}`, and `DELETE /api/employees/{id}` endpoint logic. Validates employee creation with/without relations, updating employee fields/spouse/children, deletion with cascade, and JWT authorization enforcement (missing token, invalid token, non-admin role).
+
+| # | Test | Status |
+|---|------|--------|
+| 1 | Admin can create employee with spouse and children | Passed |
+| 2 | Create employee with spouse only (no children) | Passed |
+| 3 | Create employee with children only (no spouse) | Passed |
+| 4 | Create employee without relations | Passed |
+| 5 | Update employee basic fields successfully | Passed |
+| 6 | Update employee — add spouse and remove spouse | Passed |
+| 7 | Update employee — replace children list | Passed |
+| 8 | Update non-existent employee returns `null` (404) | Passed |
+| 9 | Delete existing employee returns `true` (cascade deletes spouse/children) | Passed |
+| 10 | Delete non-existent employee returns `false` (404) | Passed |
+| 11 | Request without JWT token returns 401 Unauthorized | Passed |
+| 12 | Request with invalid JWT token returns 401 Unauthorized | Passed |
+| 13 | Request with non-admin role returns 403 Forbidden | Passed |
+
+**Total: 13 passed, 0 failed**

@@ -1,4 +1,6 @@
+using EmployeeManagement.DTOs;
 using EmployeeManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.Controllers;
@@ -41,5 +43,31 @@ public class EmployeesController : ControllerBase
     {
         var result = await _employeeService.SearchEmployeesAsync(query, offset, limit);
         return Ok(result);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeDto dto)
+    {
+        var result = await _employeeService.CreateEmployeeAsync(dto);
+        return CreatedAtAction(nameof(GetEmployeeById), new { id = result.Id }, result);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto dto)
+    {
+        var result = await _employeeService.UpdateEmployeeAsync(id, dto);
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteEmployee(int id)
+    {
+        var deleted = await _employeeService.DeleteEmployeeAsync(id);
+        if (!deleted) return NotFound();
+        return NoContent();
     }
 }

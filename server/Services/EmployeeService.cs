@@ -1,5 +1,6 @@
 using EmployeeManagement.Data;
 using EmployeeManagement.DTOs;
+using EmployeeManagement.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.Services;
@@ -9,6 +10,9 @@ public interface IEmployeeService
     Task<PaginatedResponse<EmployeeListDto>> GetEmployeesAsync(int page, int pageSize);
     Task<List<EmployeeListDto>> SearchEmployeesAsync(string query, int offset, int limit);
     Task<EmployeeListFullDto?> GetEmployeeByIdAsync(int id);
+    Task<EmployeeListFullDto> CreateEmployeeAsync(CreateEmployeeDto dto);
+    Task<EmployeeListFullDto?> UpdateEmployeeAsync(int id, UpdateEmployeeDto dto);
+    Task<bool> DeleteEmployeeAsync(int id);
 }
 
 public class EmployeeService : IEmployeeService
@@ -147,5 +151,126 @@ public class EmployeeService : IEmployeeService
                 }).ToList()
             })
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<EmployeeListFullDto> CreateEmployeeAsync(CreateEmployeeDto dto)
+    {
+        var employee = new Employee
+        {
+            Name = dto.Name,
+            Image = dto.Image,
+            Gender = dto.Gender,
+            Phone = dto.Phone,
+            NID = dto.NID,
+            Department = dto.Department,
+            BasicSalary = dto.BasicSalary
+        };
+
+        if (dto.Spouse != null)
+        {
+            employee.Spouse = new Spouse
+            {
+                Name = dto.Spouse.Name,
+                Image = dto.Spouse.Image,
+                Gender = dto.Spouse.Gender,
+                NID = dto.Spouse.NID
+            };
+        }
+
+        if (dto.Children is { Count: > 0 })
+        {
+            foreach (var childDto in dto.Children)
+            {
+                employee.Children.Add(new Child
+                {
+                    Name = childDto.Name,
+                    Image = childDto.Image,
+                    Gender = childDto.Gender,
+                    DateOfBirth = childDto.DateOfBirth
+                });
+            }
+        }
+
+        _context.Employees.Add(employee);
+        await _context.SaveChangesAsync();
+
+        return (await GetEmployeeByIdAsync(employee.Id))!;
+    }
+
+    public async Task<EmployeeListFullDto?> UpdateEmployeeAsync(int id, UpdateEmployeeDto dto)
+    {
+        var employee = await _context.Employees
+            .Include(e => e.Spouse)
+            .Include(e => e.Children)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (employee == null) return null;
+
+        employee.Name = dto.Name;
+        employee.Image = dto.Image;
+        employee.Gender = dto.Gender;
+        employee.Phone = dto.Phone;
+        employee.NID = dto.NID;
+        employee.Department = dto.Department;
+        employee.BasicSalary = dto.BasicSalary;
+
+        // Handle spouse: upsert or remove
+        if (dto.Spouse != null)
+        {
+            if (employee.Spouse != null)
+            {
+                employee.Spouse.Name = dto.Spouse.Name;
+                employee.Spouse.Image = dto.Spouse.Image;
+                employee.Spouse.Gender = dto.Spouse.Gender;
+                employee.Spouse.NID = dto.Spouse.NID;
+            }
+            else
+            {
+                employee.Spouse = new Spouse
+                {
+                    Name = dto.Spouse.Name,
+                    Image = dto.Spouse.Image,
+                    Gender = dto.Spouse.Gender,
+                    NID = dto.Spouse.NID
+                };
+            }
+        }
+        else if (employee.Spouse != null)
+        {
+            _context.Spouses.Remove(employee.Spouse);
+        }
+
+        // Handle children: replace entire list
+        var existingChildren = employee.Children.ToList();
+        _context.Children.RemoveRange(existingChildren);
+        employee.Children.Clear();
+
+        if (dto.Children is { Count: > 0 })
+        {
+            foreach (var childDto in dto.Children)
+            {
+                employee.Children.Add(new Child
+                {
+                    Name = childDto.Name,
+                    Image = childDto.Image,
+                    Gender = childDto.Gender,
+                    DateOfBirth = childDto.DateOfBirth
+                });
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        return (await GetEmployeeByIdAsync(employee.Id))!;
+    }
+
+    public async Task<bool> DeleteEmployeeAsync(int id)
+    {
+        var employee = await _context.Employees.FindAsync(id);
+        if (employee == null) return false;
+
+        _context.Employees.Remove(employee);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }
