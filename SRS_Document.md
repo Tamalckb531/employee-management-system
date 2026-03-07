@@ -147,10 +147,90 @@ The Employee Registry System is a full-stack web application for managing employ
 
 ---
 
-## 5. Future Scope (Planned)
+## 5. API Specifications
+
+### 5.1 Get Employees (Paginated)
+
+| Field             | Detail                                              |
+|-------------------|-----------------------------------------------------|
+| **API Name**      | Get Employees                                       |
+| **Endpoint**      | `GET /api/employees`                                |
+| **Method**        | GET                                                 |
+| **Description**   | Returns a paginated list of employees with their spouse and children info, designed for infinite scroll on the frontend. |
+
+**Request Parameters (Query String)**
+
+| Parameter  | Type | Default | Description                              |
+|------------|------|---------|------------------------------------------|
+| `page`     | int  | 1       | Page number (1-based). Clamped to 1 if < 1. |
+| `pageSize` | int  | 50      | Items per page. Clamped to 50 if < 1, max 100. |
+
+**Response Format (200 OK)**
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Hasan Mahmud",
+      "image": "https://randomuser.me/api/portraits/men/1.jpg",
+      "department": "Engineering",
+      "spouse": {
+        "name": "Moushumi Akter",
+        "image": "https://randomuser.me/api/portraits/women/1.jpg"
+      },
+      "children": [
+        {
+          "name": "Rafiq Hasan",
+          "image": "https://api.dicebear.com/7.x/adventurer/svg?seed=Rafiq"
+        }
+      ]
+    }
+  ],
+  "page": 1,
+  "pageSize": 50,
+  "totalCount": 10,
+  "hasMore": false
+}
+```
+
+**Response Fields**
+
+| Field        | Type               | Description                                  |
+|--------------|--------------------|----------------------------------------------|
+| `data`       | EmployeeListDto[]  | Array of employee objects for current page    |
+| `page`       | int                | Current page number                           |
+| `pageSize`   | int                | Number of items per page                      |
+| `totalCount` | int                | Total employees in database                   |
+| `hasMore`    | bool               | Whether more pages exist after current page   |
+
+**Employee DTO Fields**
+
+| Field       | Type        | Description                                |
+|-------------|-------------|--------------------------------------------|
+| `id`        | int         | Employee ID                                |
+| `name`      | string      | Employee full name                         |
+| `image`     | string      | Employee image URL                         |
+| `department`| string      | Department name                            |
+| `spouse`    | SpouseDto?  | Spouse info, or `null` if no spouse        |
+| `children`  | ChildDto[]  | Array of children, empty if none           |
+
+**Error Handling**
+
+| Scenario                     | Behavior                                          |
+|------------------------------|---------------------------------------------------|
+| `page < 1`                  | Clamped to 1                                      |
+| `pageSize < 1`              | Clamped to default (50)                           |
+| `pageSize > 100`            | Clamped to max (100)                              |
+| Page beyond total pages      | Returns empty `data` array with correct `totalCount` |
+| Empty database               | Returns empty `data` array, `totalCount: 0`       |
+| Database error               | Returns 500 Internal Server Error                 |
+
+---
+
+## 6. Future Scope (Planned)
 
 - Employee search by name, NID, department, phone
 - PDF report generation for individual/all employees
 - Docker Compose for full-stack local development
 - Image upload to cloud storage (replacing URL-based images)
-- Pagination and sorting on employee lists
