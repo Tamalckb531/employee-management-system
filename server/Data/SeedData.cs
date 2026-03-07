@@ -63,14 +63,14 @@ public static class SeedData
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Rafiq",
                         Gender = "Male",
                         Name = "Rafiq Hasan",
-                        DateOfBirth = new DateTime(2015, 3, 12)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2015, 3, 12), DateTimeKind.Utc)
                     },
                     new()
                     {
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Nadia",
                         Gender = "Female",
                         Name = "Nadia Hasan",
-                        DateOfBirth = new DateTime(2018, 7, 25)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2018, 7, 25), DateTimeKind.Utc)
                     }
                 }
             },
@@ -97,7 +97,7 @@ public static class SeedData
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Ayan",
                         Gender = "Male",
                         Name = "Ayan Tanvir",
-                        DateOfBirth = new DateTime(2019, 1, 8)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2019, 1, 8), DateTimeKind.Utc)
                     }
                 }
             },
@@ -124,21 +124,21 @@ public static class SeedData
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Tasnim",
                         Gender = "Female",
                         Name = "Tasnim Farhana",
-                        DateOfBirth = new DateTime(2016, 11, 3)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2016, 11, 3), DateTimeKind.Utc)
                     },
                     new()
                     {
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Farhan",
                         Gender = "Male",
                         Name = "Farhan Rahim",
-                        DateOfBirth = new DateTime(2019, 5, 20)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2019, 5, 20), DateTimeKind.Utc)
                     },
                     new()
                     {
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Lamia",
                         Gender = "Female",
                         Name = "Lamia Rahim",
-                        DateOfBirth = new DateTime(2022, 2, 14)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2022, 2, 14), DateTimeKind.Utc)
                     }
                 }
             },
@@ -165,7 +165,7 @@ public static class SeedData
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Mahir",
                         Gender = "Male",
                         Name = "Mahir Karim",
-                        DateOfBirth = new DateTime(2020, 9, 15)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2020, 9, 15), DateTimeKind.Utc)
                     }
                 }
             },
@@ -192,14 +192,14 @@ public static class SeedData
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Arham",
                         Gender = "Male",
                         Name = "Arham Tamal",
-                        DateOfBirth = new DateTime(2017, 6, 30)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2017, 6, 30), DateTimeKind.Utc)
                     },
                     new()
                     {
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Anika",
                         Gender = "Female",
                         Name = "Anika Tamal",
-                        DateOfBirth = new DateTime(2021, 4, 10)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2021, 4, 10), DateTimeKind.Utc)
                     }
                 }
             },
@@ -244,21 +244,21 @@ public static class SeedData
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Samin",
                         Gender = "Male",
                         Name = "Samin Arif",
-                        DateOfBirth = new DateTime(2014, 8, 22)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2014, 8, 22), DateTimeKind.Utc)
                     },
                     new()
                     {
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Sabrina",
                         Gender = "Female",
                         Name = "Sabrina Arif",
-                        DateOfBirth = new DateTime(2017, 12, 5)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2017, 12, 5), DateTimeKind.Utc)
                     },
                     new()
                     {
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Saif",
                         Gender = "Male",
                         Name = "Saif Arif",
-                        DateOfBirth = new DateTime(2021, 3, 18)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2021, 3, 18), DateTimeKind.Utc)
                     }
                 }
             },
@@ -285,7 +285,7 @@ public static class SeedData
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Riyad",
                         Gender = "Male",
                         Name = "Riyad Shakil",
-                        DateOfBirth = new DateTime(2018, 10, 2)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2018, 10, 2), DateTimeKind.Utc)
                     }
                 }
             },
@@ -312,14 +312,14 @@ public static class SeedData
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Maliha",
                         Gender = "Female",
                         Name = "Maliha Rahim",
-                        DateOfBirth = new DateTime(2013, 4, 17)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2013, 4, 17), DateTimeKind.Utc)
                     },
                     new()
                     {
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Mehedi",
                         Gender = "Male",
                         Name = "Mehedi Rahim",
-                        DateOfBirth = new DateTime(2016, 9, 28)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2016, 9, 28), DateTimeKind.Utc)
                     }
                 }
             },
@@ -346,7 +346,7 @@ public static class SeedData
                         Image = "https://api.dicebear.com/7.x/adventurer/svg?seed=Ishan",
                         Gender = "Male",
                         Name = "Ishan Imran",
-                        DateOfBirth = new DateTime(2020, 7, 11)
+                        DateOfBirth = DateTime.SpecifyKind(new DateTime(2020, 7, 11), DateTimeKind.Utc)
                     }
                 }
             }
