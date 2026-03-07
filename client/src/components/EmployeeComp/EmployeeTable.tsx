@@ -1,4 +1,5 @@
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const departmentStyles: Record<string, { color: string; bg: string }> = {
   Engineering: { color: "#6843E9", bg: "#F4F3FF" },
@@ -152,6 +153,7 @@ const employees = [
 ]
 
 const EmployeeTable = () => {
+    const navigate = useNavigate();
     return (
       <div className=" w-full h-full p-5 flex items-center justify-center">        
         <div className="overflow-x-auto max-w-350 rounded-lg border shadow-xl border-gray-200 bg-[#FFFFFC]">
@@ -195,7 +197,7 @@ const EmployeeTable = () => {
                 const dept = departmentStyles[emp.department]
 
                 return (
-                <tr key={emp.id} className=" hover:bg-gray-50">
+                <tr key={emp.id} onClick={()=>navigate(`/employee/${emp.id}`)} className=" hover:bg-gray-50 cursor-pointer">
 
                     {/* Name */}
                     <td className="px-6 py-4 flex items-center gap-3">
