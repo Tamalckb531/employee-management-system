@@ -66,7 +66,7 @@ public class AdminService : IAdminService
             issuer: jwtSettings["Issuer"],
             audience: jwtSettings["Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddSeconds(3600),
+            expires: DateTime.UtcNow.AddSeconds(172800),
             signingCredentials: credentials
         );
 
