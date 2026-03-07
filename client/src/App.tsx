@@ -1,10 +1,19 @@
+import { Routes, Route } from "react-router-dom"
+
+import EmployeesPage from "./pages/EmployeesPage"
+import EmployeeDetailsPage from "./pages/EmployeeDetailsPage"
+import EmployeeFormPage from "./pages/EmployeeFormPage"
+import NotFoundPage from "./pages/NotFoundPage"
+
 function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <h1 className="text-4xl font-bold text-gray-800">
-        Employee Management System
-      </h1>
-    </div>
+    <Routes>
+      <Route path="/" element={<EmployeesPage />} />
+      <Route path="/employee/:id" element={<EmployeeDetailsPage />} />
+      <Route path="/form" element={<EmployeeFormPage />} />
+       {/* fallback */}
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   )
 }
 
