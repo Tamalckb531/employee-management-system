@@ -326,6 +326,103 @@ The API is designed for infinite scrolling. The frontend increases `offset` to f
 | `offset=50, limit=50`                         | Next 50 results   |
 | `offset=100, limit=50`                        | Final 20 results  |
 
+### 5.3 Get Employee By Id
+
+| Field             | Detail                                              |
+|-------------------|-----------------------------------------------------|
+| **API Name**      | Get Employee By Id                                  |
+| **Endpoint**      | `GET /api/employees/{id}`                           |
+| **Method**        | GET                                                 |
+| **Description**   | Returns the full details of a single employee including spouse (with gender and NID) and children (with gender and date of birth) data. Used by the frontend when clicking an employee row to view their details page. |
+
+**Path Parameter**
+
+| Parameter | Type | Description                        |
+|-----------|------|------------------------------------|
+| `id`      | int  | The employee ID to look up.        |
+
+**Example Request**
+
+```
+GET /api/employees/1
+GET /api/employees/5
+```
+
+**Response Format (200 OK)**
+
+```json
+{
+  "id": 1,
+  "name": "Hasan Mahmud",
+  "image": "https://randomuser.me/api/portraits/men/1.jpg",
+  "gender": "Male",
+  "nid": "1234567890",
+  "phone": "+8801712345678",
+  "department": "Engineering",
+  "basicSalary": 45000.00,
+  "spouse": {
+    "name": "Moushumi Akter",
+    "image": "https://randomuser.me/api/portraits/women/1.jpg",
+    "gender": "Female",
+    "nid": "9876543210"
+  },
+  "children": [
+    {
+      "name": "Rafiq Hasan",
+      "image": "https://api.dicebear.com/7.x/adventurer/svg?seed=Rafiq",
+      "gender": "Male",
+      "dateOfBirth": "2018-01-01T00:00:00Z"
+    }
+  ]
+}
+```
+
+**Response Fields**
+
+Returns a single `EmployeeListFullDto` object with extended spouse and children details.
+
+| Field         | Type             | Description                                |
+|---------------|------------------|--------------------------------------------|
+| `id`          | int              | Employee ID                                |
+| `name`        | string           | Employee full name                         |
+| `image`       | string           | Employee image URL                         |
+| `gender`      | string           | Employee gender                            |
+| `nid`         | string           | National ID (10 or 17 digits)              |
+| `phone`       | string           | Phone number (BD format)                   |
+| `department`  | string           | Department name                            |
+| `basicSalary` | decimal          | Basic salary in BDT                        |
+| `spouse`      | SpouseFullDto?   | Spouse info with gender and NID, or `null` if no spouse |
+| `children`    | ChildFullDto[]   | Array of children with gender and dateOfBirth, empty if none |
+
+**SpouseFullDto Fields**
+
+| Field    | Type   | Description                   |
+|----------|--------|-------------------------------|
+| `name`   | string | Spouse full name              |
+| `image`  | string | Spouse image URL              |
+| `gender` | string | Spouse gender                 |
+| `nid`    | string | Spouse National ID            |
+
+**ChildFullDto Fields**
+
+| Field         | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `name`        | string   | Child full name              |
+| `image`       | string   | Child image URL              |
+| `gender`      | string   | Child gender                 |
+| `dateOfBirth` | DateTime | Child date of birth (UTC)    |
+
+**Error Handling**
+
+| Scenario                        | Behavior                                      |
+|---------------------------------|-----------------------------------------------|
+| Employee found                  | Returns `200 OK` with employee object         |
+| Employee ID does not exist      | Returns `404 Not Found`                       |
+| ID is negative or zero          | Returns `404 Not Found`                       |
+| Employee without spouse         | `spouse` field is `null`                      |
+| Employee without children       | `children` field is empty array `[]`          |
+| Database error                  | Returns 500 Internal Server Error             |
+
 ---
 
 ## 6. Future Scope (Planned)

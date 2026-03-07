@@ -1,74 +1,45 @@
 ` 
-Implement a Global Search API for the EmployeeManagement backend.
-The frontend already has debouncing, so do not implement debouncing on the backend.
-
-Requirements
+Implement an API endpoint to fetch full details of a single employee for the employee details page.
 
 Endpoint
+GET /api/employees/{id}
+Behavior
 
-GET /api/employees/search
+When the frontend clicks an employee row in the table, it will send the employee ID to this endpoint.
 
-Query parameters
+Backend flow:
 
-query (string) → search keyword
+Receive id
 
-offset (int, default = 0)
+Find the employee in the database
 
-limit (int, default = 50)
+Load related data:
 
-Search behavior
+Spouse
 
-The search must be case-insensitive and match employees by:
+Children
+
+Return the complete employee information
+
+Use EF Core Include() to fetch relations efficiently.
+
+Response DTO
+
+Use the existing EmployeeDto structure which now includes:
 
 Name
+
+Image
+
+Gender
+
+Phone
 
 NID
 
 Department
 
-Example:
-
-searching "engineering" should return employees in the Engineering department
-
-searching "hasan" should return employees whose name contains Hasan
-
-searching "123" should match NID containing 123
-
-Use EF Core LINQ with proper indexing-friendly queries.
-
-Infinite Scroll Compatibility
-
-This API must support infinite scrolling, same as the existing GetAll endpoint.
-
-Rules:
-
-default limit = 50
-
-frontend will increase offset to fetch next results
-
-results must be ordered consistently (e.g. by Name or Id)
-
-Skip(offset).Take(limit) must be used
-
-Example:
-
-Search "Engineering" returns 120 employees
-
-offset=0 → first 50
-
-offset=50 → next 50
-
-offset=100 → final 20
-
-The API must behave correctly for this scenario.
-
-Response Format
-
-Return an array of employees containing:
-
-Name
-
-Image
+BasicSalary
 
 Spouse
 
@@ -82,65 +53,78 @@ Name
 
 Image
 
-Same DTO structure as the GetAll endpoint so the frontend can reuse the same table component.
+Return null or 404 if the employee does not exist.
 
 Architecture
 
-Follow the existing architecture:
+Follow the same architecture already used:
 
 Controller
 
 Service layer
 
-DTOs (reuse if possible)
+DTO reuse
 
-Files to implement:
+Files to update/create:
 
-EmployeesController.cs (search endpoint)
+EmployeesController.cs
 
-EmployeeService.cs (search logic)
+EmployeeService.cs
 
-Edge Cases to Handle
+Add a method similar to:
 
-empty search query → return empty array
+GetEmployeeByIdAsync(int id)
+Edge Cases
 
-no matching employees → return empty array
+Handle the following scenarios:
 
-employees without spouse
+Employee exists with spouse and children
 
-employees without children
+Employee exists without spouse
 
-offset larger than available results
+Employee exists without children
 
-negative offset or limit
+Employee exists with no relations
+
+Employee ID does not exist
+
+Invalid ID (negative or zero)
 
 Unit Tests
 
-Create test cases covering:
+Create unit tests covering:
 
-Search by Name
+Employee exists and returns full details
 
-Search by NID
+Employee with spouse returns populated SpouseDto
 
-Search by Department
+Employee without spouse returns null
 
-Case-insensitive search
+Employee with children returns populated ChildDto list
 
-Infinite scroll behavior (offset + limit)
+Employee without children returns empty list
 
-Empty search query
+Non-existent employee ID returns null or 404
 
-No matching results
+Negative ID handled correctly
 
-Employee with no spouse
+Returned DTO contains correct mapped fields (name, image, gender, NID, phone, department, basicSalary, spouse, children)
 
-Employee with no children
+Test Documentation
 
-Invalid offset/limit values
+Update the file:
 
-Documentation
+Server.Tests/TEST_CASE.md
 
-Update the SRS.md file with this API using the same format already used for the GetAll endpoint.
+Add a new section titled:
+
+## 3. Employee Service — Get Employee By Id
+
+Follow the same table format already used in that file and include all test cases with Status = Passed.
+
+SRS Documentation
+
+Update SRS.md and add documentation for this API following the same format used for previous APIs.
 
 Include:
 
@@ -150,7 +134,7 @@ Endpoint
 
 Description
 
-Query Parameters
+Path Parameter
 
 Example Request
 
@@ -160,11 +144,11 @@ Error Handling
 
 Important
 
-Do not modify existing models or SeedData
+Do not modify existing models
 
-Reuse existing DTOs if possible
+Reuse existing DTOs
 
-Ensure performance is good for large datasets
+Follow existing coding style
 
-Ensure infinite scroll works exactly like the GetAll API
+Ensure the API returns a single EmployeeDto object
 `

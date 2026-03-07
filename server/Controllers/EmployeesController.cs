@@ -24,6 +24,14 @@ public class EmployeesController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetEmployeeById(int id)
+    {
+        var result = await _employeeService.GetEmployeeByIdAsync(id);
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
     [HttpGet("search")]
     public async Task<IActionResult> SearchEmployees(
         [FromQuery] string query = "",

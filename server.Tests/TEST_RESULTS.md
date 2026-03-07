@@ -50,3 +50,21 @@ Tests for `GET /api/employees/search` endpoint logic. Validates case-insensitive
 | 18 | Returns correct DTO fields (name, image, gender, NID, phone, department, basicSalary, spouse, children) | Passed |
 
 **Total: 18 passed, 0 failed**
+
+## 3. Employee Service — Get Employee By Id
+
+Tests for `GET /api/employees/{id}` endpoint logic. Validates fetching a single employee with full details including spouse (name, image, gender, NID) and children (name, image, gender, dateOfBirth), handling of missing relations, non-existent IDs, and correct DTO mapping.
+
+| # | Test | Status |
+|---|------|--------|
+| 1 | Existing employee returns full details (spouse + children) | Passed |
+| 2 | Employee with spouse returns populated SpouseFullDto (name, image, gender, NID) | Passed |
+| 3 | Employee without spouse returns `null` | Passed |
+| 4 | Employee with children returns populated ChildFullDto list (name, image, gender, dateOfBirth) | Passed |
+| 5 | Employee without children returns empty list | Passed |
+| 6 | Non-existent employee ID returns `null` | Passed |
+| 7 | Negative ID returns `null` | Passed |
+| 8 | Zero ID returns `null` | Passed |
+| 9 | Returns correct DTO fields (id, name, image, gender, NID, phone, department, basicSalary, spouse with gender/NID, children with gender/dateOfBirth) | Passed |
+
+**Total: 9 passed, 0 failed**

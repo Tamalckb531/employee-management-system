@@ -8,6 +8,7 @@ public interface IEmployeeService
 {
     Task<PaginatedResponse<EmployeeListDto>> GetEmployeesAsync(int page, int pageSize);
     Task<List<EmployeeListDto>> SearchEmployeesAsync(string query, int offset, int limit);
+    Task<EmployeeListFullDto?> GetEmployeeByIdAsync(int id);
 }
 
 public class EmployeeService : IEmployeeService
@@ -111,5 +112,40 @@ public class EmployeeService : IEmployeeService
                 }).ToList()
             })
             .ToListAsync();
+    }
+
+    public async Task<EmployeeListFullDto?> GetEmployeeByIdAsync(int id)
+    {
+        if (id < 1) return null;
+
+        return await _context.Employees
+            .AsNoTracking()
+            .Where(e => e.Id == id)
+            .Select(e => new EmployeeListFullDto
+            {
+                Id = e.Id,
+                Name = e.Name,
+                Image = e.Image,
+                Gender = e.Gender,
+                NID = e.NID,
+                Phone = e.Phone,
+                Department = e.Department,
+                BasicSalary = e.BasicSalary,
+                Spouse = e.Spouse != null ? new SpouseFullDto
+                {
+                    Name = e.Spouse.Name,
+                    Image = e.Spouse.Image,
+                    Gender = e.Spouse.Gender,
+                    NID = e.Spouse.NID,
+                } : null,
+                Children = e.Children.Select(c => new ChildFullDto
+                {
+                    Name = c.Name,
+                    Image = c.Image,
+                    Gender = c.Gender,
+                    DateOfBirth = c.DateOfBirth,
+                }).ToList()
+            })
+            .FirstOrDefaultAsync();
     }
 }
