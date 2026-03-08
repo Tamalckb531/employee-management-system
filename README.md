@@ -1,9 +1,6 @@
 # employee-management-system
 Assessment project for Fionetix Solution
 
-# Note to the Reviewer:
-The backend of this project is fully implemented, and the frontend UI is partially complete. I am in the final stages of integrating the frontend with the backend and setting up the Docker Compose for easy deployment. I kindly request a little more time to finalize everything. The complete project will be submitted shortly with all features fully functional. Thank you for your understanding.
-
 # Docker command :
 docker pull postgres:15
 
